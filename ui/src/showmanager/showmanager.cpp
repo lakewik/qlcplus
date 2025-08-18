@@ -48,7 +48,8 @@
 #include "sequence.h"
 #include "chaser.h"
 
-#include "midiprotocol.h"
+// MIDI protocol constants for MTC support
+#define CHANNEL_OFFSET_MBC_BEAT 0x1000
 
 #define SETTINGS_HSPLITTER "showmanager/hsplitter"
 #define SETTINGS_VSPLITTER "showmanager/vsplitter"
