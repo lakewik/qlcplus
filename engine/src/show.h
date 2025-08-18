@@ -27,7 +27,19 @@
 #include "function.h"
 #include "track.h"
 
-#include "../../plugins/midi/src/common/mtctimecode.h"
+// Simple TimeCode struct for MTC support
+struct TimeCode
+{
+    int hours;
+    int minutes;
+    int seconds;
+    int frames;
+    int frameRate; // 0=24fps, 1=25fps, 2=30fps, 3=30fps drop frame
+    
+    TimeCode() : hours(0), minutes(0), seconds(0), frames(0), frameRate(2) {}
+    TimeCode(int h, int m, int s, int f, int fr = 2) 
+        : hours(h), minutes(m), seconds(s), frames(f), frameRate(fr) {}
+};
 
 class QXmlStreamReader;
 class ShowRunner;

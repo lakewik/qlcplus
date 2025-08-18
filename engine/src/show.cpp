@@ -23,7 +23,7 @@
 #include <QDebug>
 #include <QFile>
 #include <QList>
-#include "../../plugins/midi/src/common/mtctimecode.h"
+
 
 #include "showrunner.h"
 #include "function.h"
@@ -571,6 +571,22 @@ TimeCode Show::currentMTCTimeCode() const
 
 quint32 Show::currentMTCTimeMs() const
 {
-    return m_currentMTCTimeCode.toMilliseconds();
+    // Simple conversion from timecode to milliseconds
+    // Frame rates: 24fps, 25fps, 30fps, 30fps drop frame
+    int frameRate = 30; // Default to 30fps
+    switch (m_currentMTCTimeCode.frameRate)
+    {
+        case 0: frameRate = 24; break;  // FPS_24
+        case 1: frameRate = 25; break;  // FPS_25
+        case 2: frameRate = 30; break;  // FPS_30
+        case 3: frameRate = 30; break;  // FPS_30DF (approximate)
+    }
+    
+    quint32 totalFrames = m_currentMTCTimeCode.hours * 3600 * frameRate +
+                          m_currentMTCTimeCode.minutes * 60 * frameRate +
+                          m_currentMTCTimeCode.seconds * frameRate +
+                          m_currentMTCTimeCode.frames;
+    
+    return (totalFrames * 1000) / frameRate;
 }
 
