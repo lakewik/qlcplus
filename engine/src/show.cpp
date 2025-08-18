@@ -41,11 +41,11 @@
 Show::Show(Doc* doc) : Function(doc, Function::ShowType)
     , m_timeDivisionType(Time)
     , m_timeDivisionBPM(120)
+    , m_mtcEnabled(false)
+    , m_currentMTCTimeCode()
     , m_latestTrackId(0)
     , m_latestShowFunctionID(0)
     , m_runner(NULL)
-    , m_mtcEnabled(false)
-    , m_currentMTCTimeCode()
 {
     setName(tr("New Show"));
 

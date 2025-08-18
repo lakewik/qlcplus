@@ -283,25 +283,16 @@ void AlsaMidiInputThread::readEvent()
 
             qDebug()  << "MIDI clock: " << cmd;
         }
-        else if (snd_seq_ev_is_system_type(ev))
+        else if (ev->type == SND_SEQ_EVENT_QFRAME)
         {
-            // Handle MTC (MIDI Time Code) messages
-            if (ev->type == SND_SEQ_EVENT_SYSEX)
-            {
-                // Check if this is a MTC Quarter Frame message
-                if (ev->data.ext.len >= 1)
-                {
-                    uchar* data = (uchar*)ev->data.ext.ptr;
-                    if (data[0] == 0xF1) // MIDI_TIME_CODE
-                    {
-                        // Process MTC Quarter Frame message
-                        if (ev->data.ext.len >= 2)
-                        {
-                            device->processMTCQuarterFrame(data[1]);
-                        }
-                    }
-                }
-            }
+            // MIDI Time Code Quarter Frame (0xF1) delivered as QFRAME event
+            uchar qf = static_cast<uchar>(ev->data.control.value & 0x7F);
+            device->processMTCQuarterFrame(qf);
+        }
+        else if (ev->type == SND_SEQ_EVENT_SYSEX)
+        {
+            // Optionally parse MTC Full Frame SysEx here (F0 7F ... 01 01 hr mn sc fr F7)
+            // Not handled at the moment
         }
 
         // ALSA API is a bit controversial on this. snd_seq_event_input() says

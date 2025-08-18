@@ -210,8 +210,8 @@ bool MidiPlugin::openInput(quint32 input, quint32 universe)
     {
         connect(dev, SIGNAL(valueChanged(QVariant,ushort,uchar)),
                 this, SLOT(slotValueChanged(QVariant,ushort,uchar)));
-        connect(dev, SIGNAL(mtcTimeCodeChanged(MTCTimeCode::TimeCode)),
-                this, SLOT(slotMTCValueChanged(QVariant,MTCTimeCode::TimeCode)));
+        connect(dev, SIGNAL(mtcTimeCodeChanged(TimeCode)),
+                this, SLOT(slotMTCValueChanged(QVariant,TimeCode)));
         connect(dev, SIGNAL(mtcBPMChanged(int)),
                 this, SLOT(slotMTCBPMChanged(QVariant,int)));
         addToMap(universe, input, Input);
@@ -231,8 +231,8 @@ void MidiPlugin::closeInput(quint32 input, quint32 universe)
         dev->close();
         disconnect(dev, SIGNAL(valueChanged(QVariant,ushort,uchar)),
                    this, SLOT(slotValueChanged(QVariant,ushort,uchar)));
-        disconnect(dev, SIGNAL(mtcTimeCodeChanged(MTCTimeCode::TimeCode)),
-                   this, SLOT(slotMTCValueChanged(QVariant,MTCTimeCode::TimeCode)));
+        disconnect(dev, SIGNAL(mtcTimeCodeChanged(TimeCode)),
+                   this, SLOT(slotMTCValueChanged(QVariant,TimeCode)));
         disconnect(dev, SIGNAL(mtcBPMChanged(int)),
                    this, SLOT(slotMTCBPMChanged(QVariant,int)));
     }
