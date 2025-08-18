@@ -1365,27 +1365,22 @@ void ShowManager::slotMTCInputValueChanged(quint32 universe, quint32 channel, uc
         // CHANNEL_OFFSET_MBC_BEAT + 4 = time highest MSB
         
         static quint32 mtcTimeMs = 0;
-        static int mtcChannel = 0;
         
         if (channel == CHANNEL_OFFSET_MBC_BEAT + 1)
         {
             mtcTimeMs = (mtcTimeMs & 0xFFFFFF00) | value;
-            mtcChannel = 1;
         }
         else if (channel == CHANNEL_OFFSET_MBC_BEAT + 2)
         {
             mtcTimeMs = (mtcTimeMs & 0xFFFF00FF) | (value << 8);
-            mtcChannel = 2;
         }
         else if (channel == CHANNEL_OFFSET_MBC_BEAT + 3)
         {
             mtcTimeMs = (mtcTimeMs & 0xFF00FFFF) | (value << 16);
-            mtcChannel = 3;
         }
         else if (channel == CHANNEL_OFFSET_MBC_BEAT + 4)
         {
             mtcTimeMs = (mtcTimeMs & 0x00FFFFFF) | (value << 24);
-            mtcChannel = 4;
             
             // Complete timecode received, update show cursor
             if (m_show->isMTCEnabled())
