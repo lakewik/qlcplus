@@ -31,7 +31,7 @@
 #include "show.h"
 #include "doc.h"
 
-#include "../../../plugins/midi/src/common/mtctimecode.h"
+
 
 class QComboBox;
 class QCheckBox;

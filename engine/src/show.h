@@ -39,6 +39,9 @@ struct TimeCode
     TimeCode() : hours(0), minutes(0), seconds(0), frames(0), frameRate(2) {}
     TimeCode(int h, int m, int s, int f, int fr = 2) 
         : hours(h), minutes(m), seconds(s), frames(f), frameRate(fr) {}
+    
+    // Convert to milliseconds
+    quint32 toMilliseconds() const;
 };
 
 class QXmlStreamReader;

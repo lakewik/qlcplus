@@ -47,7 +47,7 @@
 #include "qlcmacros.h"
 #include "sequence.h"
 #include "chaser.h"
-#include "mtctimecode.h"
+
 #include "midiprotocol.h"
 
 #define SETTINGS_HSPLITTER "showmanager/hsplitter"

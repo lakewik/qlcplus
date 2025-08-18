@@ -571,10 +571,16 @@ TimeCode Show::currentMTCTimeCode() const
 
 quint32 Show::currentMTCTimeMs() const
 {
+    return m_currentMTCTimeCode.toMilliseconds();
+}
+
+// Implementation of TimeCode::toMilliseconds()
+quint32 TimeCode::toMilliseconds() const
+{
     // Simple conversion from timecode to milliseconds
     // Frame rates: 24fps, 25fps, 30fps, 30fps drop frame
     int frameRate = 30; // Default to 30fps
-    switch (m_currentMTCTimeCode.frameRate)
+    switch (frameRate)
     {
         case 0: frameRate = 24; break;  // FPS_24
         case 1: frameRate = 25; break;  // FPS_25
@@ -582,10 +588,10 @@ quint32 Show::currentMTCTimeMs() const
         case 3: frameRate = 30; break;  // FPS_30DF (approximate)
     }
     
-    quint32 totalFrames = m_currentMTCTimeCode.hours * 3600 * frameRate +
-                          m_currentMTCTimeCode.minutes * 60 * frameRate +
-                          m_currentMTCTimeCode.seconds * frameRate +
-                          m_currentMTCTimeCode.frames;
+    quint32 totalFrames = hours * 3600 * frameRate +
+                          minutes * 60 * frameRate +
+                          seconds * frameRate +
+                          frames;
     
     return (totalFrames * 1000) / frameRate;
 }
