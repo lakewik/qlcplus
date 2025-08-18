@@ -155,6 +155,10 @@ void ConfigureMidiPlugin::slotUpdateTree()
         widget = createInitMessageWidget(dev->midiTemplateName());
         widget->setProperty(PROP_DEV, (qulonglong) dev);
         m_tree->setItemWidget(item, COL_INITMESSAGE, widget);
+
+        // Output devices don't need MTC, but we need to create an empty widget for column alignment
+        QWidget* emptyWidget = new QWidget();
+        m_tree->setItemWidget(item, COL_MTC, emptyWidget);
     }
 
     QTreeWidgetItem* inputs = new QTreeWidgetItem(m_tree);
@@ -189,6 +193,8 @@ void ConfigureMidiPlugin::slotUpdateTree()
 
     m_tree->resizeColumnToContents(COL_NAME);
     m_tree->resizeColumnToContents(COL_CHANNEL);
+    m_tree->resizeColumnToContents(COL_MODE);
+    m_tree->resizeColumnToContents(COL_INITMESSAGE);
     m_tree->resizeColumnToContents(COL_MTC);
 }
 
