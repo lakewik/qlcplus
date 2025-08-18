@@ -67,16 +67,12 @@ ShowEditor::ShowEditor(QWidget* parent, Show* show, Doc* doc)
 
     updateFunctionList();
 
-    // Add MTC monitor widget - make it clearly visible at the top
+    // Add MTC monitor widget
     MTCMonitorWidget* mtcWidget = new MTCMonitorWidget(this);
     mtcWidget->setShow(m_show);
-    
-    // Add MTC widget to the main layout to make it clearly visible
-    QVBoxLayout* mainLayout = qobject_cast<QVBoxLayout*>(this->layout());
-    if (mainLayout != nullptr) {
-        // Insert at the top to make it clearly visible
-        mainLayout->insertWidget(0, mtcWidget);
-    }
+    QVBoxLayout* mtcLayout = new QVBoxLayout(m_mtcMonitorContainer);
+    mtcLayout->setContentsMargins(0, 0, 0, 0);
+    mtcLayout->addWidget(mtcWidget);
 
     // Set focus to the editor
     m_nameEdit->setFocus();

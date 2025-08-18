@@ -34,22 +34,18 @@ MTCMonitorWidget::~MTCMonitorWidget()
 
 void MTCMonitorWidget::setupUI()
 {
-    // Make the widget more prominent
-    this->setStyleSheet("QGroupBox { font-weight: bold; border: 2px solid #0078D4; border-radius: 5px; margin-top: 10px; } QGroupBox::title { subcontrol-origin: margin; left: 10px; padding: 0 5px 0 5px; }");
-    
     QVBoxLayout* mainLayout = new QVBoxLayout(this);
     mainLayout->setContentsMargins(5, 5, 5, 5);
     mainLayout->setSpacing(5);
 
-    m_mtcGroup = new QGroupBox(tr("🎵 MIDI Time Code (MTC) - Click to Enable"));
+    m_mtcGroup = new QGroupBox(tr("MIDI Time Code (MTC)"));
     mainLayout->addWidget(m_mtcGroup);
 
     QVBoxLayout* groupLayout = new QVBoxLayout(m_mtcGroup);
     groupLayout->setSpacing(5);
 
-    // MTC Enable checkbox - make it more prominent
-    m_mtcEnabledCheck = new QCheckBox(tr("✅ ENABLE MTC SYNCHRONIZATION"));
-    m_mtcEnabledCheck->setStyleSheet("QCheckBox { font-weight: bold; font-size: 14px; color: #0078D4; } QCheckBox::indicator { width: 20px; height: 20px; }");
+    // MTC Enable checkbox
+    m_mtcEnabledCheck = new QCheckBox(tr("Enable MTC synchronization"));
     groupLayout->addWidget(m_mtcEnabledCheck);
     connect(m_mtcEnabledCheck, SIGNAL(toggled(bool)), 
             this, SLOT(slotMTCCheckboxChanged(bool)));
