@@ -27,7 +27,7 @@
 #include "function.h"
 #include "track.h"
 
-class MTCTimeCode;
+#include "../../plugins/midi/src/common/mtctimecode.h"
 
 class QXmlStreamReader;
 class ShowRunner;
@@ -95,15 +95,15 @@ public:
     // MTC support
     void setMTCEnabled(bool enabled);
     bool isMTCEnabled() const;
-    void setMTCTimeCode(const MTCTimeCode::TimeCode& timeCode);
-    MTCTimeCode::TimeCode currentMTCTimeCode() const;
+    void setMTCTimeCode(const TimeCode& timeCode);
+    TimeCode currentMTCTimeCode() const;
     quint32 currentMTCTimeMs() const;
 
 private:
     TimeDivision m_timeDivisionType;
     int m_timeDivisionBPM;
     bool m_mtcEnabled;
-    MTCTimeCode::TimeCode m_currentMTCTimeCode;
+    TimeCode m_currentMTCTimeCode;
 
     /*********************************************************************
      * Tracks

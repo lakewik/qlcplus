@@ -132,3 +132,4 @@ void MTCMonitorWidget::slotMTCCheckboxChanged(bool checked)
         emit mtcEnabledChanged(checked);
     }
 }
+

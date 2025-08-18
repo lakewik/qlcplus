@@ -115,3 +115,4 @@ void MTCTest::testBPMCalculation()
 QTEST_MAIN(MTCTest)
 
 #include "mtctest.moc"
+

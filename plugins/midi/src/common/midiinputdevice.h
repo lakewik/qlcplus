@@ -22,7 +22,7 @@
 
 #include "mididevice.h"
 
-class MTCTimeCode;
+#include "mtctimecode.h"
 
 class MidiInputDevice : public MidiDevice
 {
@@ -46,7 +46,7 @@ public:
 
 signals:
     void valueChanged(const QVariant& uid, ushort channel, uchar value);
-    void mtcTimeCodeChanged(const MTCTimeCode::TimeCode& timeCode);
+    void mtcTimeCodeChanged(const TimeCode& timeCode);
     void mtcBPMChanged(int bpm);
 
 private:

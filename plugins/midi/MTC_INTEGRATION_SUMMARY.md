@@ -159,3 +159,4 @@ The implementation is designed to be:
 - **Extensible**: Foundation for future timing enhancements
 
 This integration positions QLC+ as a professional lighting control solution capable of handling complex, time-critical applications with external timing requirements.
+

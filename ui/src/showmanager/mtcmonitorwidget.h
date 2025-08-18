@@ -64,3 +64,4 @@ private:
 };
 
 #endif // MTCMONITORWIDGET_H
+

@@ -23,6 +23,7 @@
 #include <QDebug>
 #include <QFile>
 #include <QList>
+#include "../../plugins/midi/src/common/mtctimecode.h"
 
 #include "showrunner.h"
 #include "function.h"
@@ -559,12 +560,12 @@ bool Show::isMTCEnabled() const
     return m_mtcEnabled;
 }
 
-void Show::setMTCTimeCode(const MTCTimeCode::TimeCode& timeCode)
+void Show::setMTCTimeCode(const TimeCode& timeCode)
 {
     m_currentMTCTimeCode = timeCode;
 }
 
-MTCTimeCode::TimeCode Show::currentMTCTimeCode() const
+TimeCode Show::currentMTCTimeCode() const
 {
     return m_currentMTCTimeCode;
 }

@@ -289,3 +289,4 @@ MTCTimeCode::TimeCode MTCTimeCode::TimeCode::fromBPM(int bpm, FrameRate fr)
     
     return TimeCode(hours, minutes, seconds, frames, fr);
 }
+

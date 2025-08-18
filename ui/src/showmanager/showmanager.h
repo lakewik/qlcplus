@@ -31,7 +31,7 @@
 #include "show.h"
 #include "doc.h"
 
-class MTCTimeCode;
+#include "../../../plugins/midi/src/common/mtctimecode.h"
 
 class QComboBox;
 class QCheckBox;
@@ -175,7 +175,7 @@ protected slots:
     void slotTimeDivisionTypeChanged(int idx);
     void slotBPMValueChanged(int value);
     void slotMTCStatusChanged(bool enabled);
-    void slotMTCTimeCodeChanged(const MTCTimeCode::TimeCode& timeCode);
+    void slotMTCTimeCodeChanged(const TimeCode& timeCode);
     void slotMTCBPMChanged(int bpm);
     void slotMTCInputValueChanged(quint32 universe, quint32 channel, uchar value, QString key);
 

@@ -29,7 +29,7 @@
 #include "qlcioplugin.h"
 #include "miditemplate.h"
 
-class MTCTimeCode;
+#include "mtctimecode.h"
 
 class ConfigureMIDIPlugin;
 class MidiOutputDevice;
@@ -125,7 +125,7 @@ private slots:
     void slotValueChanged(const QVariant& uid, ushort channel, uchar value);
     
     /** Catch MIDI MTC timecode changes */
-    void slotMTCValueChanged(const QVariant& uid, const MTCTimeCode::TimeCode& timeCode);
+    void slotMTCValueChanged(const QVariant& uid, const TimeCode& timeCode);
     
     /** Catch MIDI MTC BPM changes */
     void slotMTCBPMChanged(const QVariant& uid, int bpm);

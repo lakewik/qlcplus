@@ -1313,7 +1313,7 @@ void ShowManager::slotMTCStatusChanged(bool enabled)
     }
 }
 
-void ShowManager::slotMTCTimeCodeChanged(const MTCTimeCode::TimeCode& timeCode)
+void ShowManager::slotMTCTimeCodeChanged(const TimeCode& timeCode)
 {
     if (m_show != NULL && m_show->isMTCEnabled())
     {
