@@ -350,7 +350,7 @@ void MidiPlugin::slotValueChanged(const QVariant& uid, ushort channel, uchar val
     }
 }
 
-void MidiPlugin::slotMTCValueChanged(const QVariant& uid, const MTCTimeCode::TimeCode& timeCode)
+void MidiPlugin::slotMTCValueChanged(const QVariant& uid, const TimeCode& timeCode)
 {
     for (int i = 0; i < m_enumerator->inputDevices().size(); i++)
     {
@@ -373,6 +373,8 @@ void MidiPlugin::slotMTCValueChanged(const QVariant& uid, const MTCTimeCode::Tim
 
 void MidiPlugin::slotMTCBPMChanged(const QVariant& uid, int bpm)
 {
+    Q_UNUSED(bpm)
+    
     for (int i = 0; i < m_enumerator->inputDevices().size(); i++)
     {
         MidiInputDevice* dev = m_enumerator->inputDevices().at(i);

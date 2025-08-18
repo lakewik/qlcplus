@@ -29,7 +29,6 @@
 #include "function.h"
 #include "show.h"
 #include "doc.h"
-#include "mtctimecode.h"
 
 #define KXMLQLCShowTimeDivision QString("TimeDivision")
 #define KXMLQLCShowTimeType     QString("Type")
