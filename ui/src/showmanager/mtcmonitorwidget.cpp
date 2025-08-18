@@ -19,7 +19,7 @@
 
 #include <QDebug>
 #include "mtcmonitorwidget.h"
-#include "show.h"
+#include "../../engine/src/show.h"
 
 MTCMonitorWidget::MTCMonitorWidget(QWidget* parent)
     : QWidget(parent)
