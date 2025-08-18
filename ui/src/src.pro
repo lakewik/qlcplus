@@ -131,7 +131,8 @@ HEADERS += showmanager/multitrackview.h \
            showmanager/rgbmatrixitem.h \
            showmanager/efxitem.h \
            showmanager/timingstool.h \
-           showmanager/showmanager.h
+           showmanager/showmanager.h \
+           showmanager/mtcmonitorwidget.h
 
 # Virtual Console headers
 HEADERS += virtualconsole/addvcbuttonmatrix.h \
@@ -313,7 +314,8 @@ SOURCES += showmanager/multitrackview.cpp \
            showmanager/rgbmatrixitem.cpp \
            showmanager/efxitem.cpp \
            showmanager/timingstool.cpp \
-           showmanager/showmanager.cpp
+           showmanager/showmanager.cpp \
+           showmanager/mtcmonitorwidget.cpp
 
 # Virtual Console sources
 SOURCES += virtualconsole/addvcbuttonmatrix.cpp \

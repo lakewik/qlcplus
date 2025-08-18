@@ -151,6 +151,16 @@
      </property>
     </spacer>
    </item>
+   <item row="4" column="0" colspan="3">
+    <widget class="QWidget" name="m_mtcMonitorContainer" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <resources>

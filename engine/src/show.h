@@ -27,6 +27,8 @@
 #include "function.h"
 #include "track.h"
 
+class MTCTimeCode;
+
 class QXmlStreamReader;
 class ShowRunner;
 
@@ -72,6 +74,7 @@ public:
         BPM_4_4,
         BPM_3_4,
         BPM_2_4,
+        MTC,
         Invalid
     };
     Q_ENUM(TimeDivision)
@@ -89,9 +92,18 @@ public:
     static QString tempoToString(Show::TimeDivision type);
     static Show::TimeDivision stringToTempo(QString tempo);
 
+    // MTC support
+    void setMTCEnabled(bool enabled);
+    bool isMTCEnabled() const;
+    void setMTCTimeCode(const MTCTimeCode::TimeCode& timeCode);
+    MTCTimeCode::TimeCode currentMTCTimeCode() const;
+    quint32 currentMTCTimeMs() const;
+
 private:
     TimeDivision m_timeDivisionType;
     int m_timeDivisionBPM;
+    bool m_mtcEnabled;
+    MTCTimeCode::TimeCode m_currentMTCTimeCode;
 
     /*********************************************************************
      * Tracks

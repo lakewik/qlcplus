@@ -31,6 +31,7 @@
 #include "midienumerator.h"
 #include "midiprotocol.h"
 #include "midiplugin.h"
+#include "mtctimecode.h"
 #include "qlcconfig.h"
 #include "qlcfile.h"
 
@@ -209,6 +210,10 @@ bool MidiPlugin::openInput(quint32 input, quint32 universe)
     {
         connect(dev, SIGNAL(valueChanged(QVariant,ushort,uchar)),
                 this, SLOT(slotValueChanged(QVariant,ushort,uchar)));
+        connect(dev, SIGNAL(mtcTimeCodeChanged(MTCTimeCode::TimeCode)),
+                this, SLOT(slotMTCValueChanged(QVariant,MTCTimeCode::TimeCode)));
+        connect(dev, SIGNAL(mtcBPMChanged(int)),
+                this, SLOT(slotMTCBPMChanged(QVariant,int)));
         addToMap(universe, input, Input);
         return dev->open();
     }
@@ -226,6 +231,10 @@ void MidiPlugin::closeInput(quint32 input, quint32 universe)
         dev->close();
         disconnect(dev, SIGNAL(valueChanged(QVariant,ushort,uchar)),
                    this, SLOT(slotValueChanged(QVariant,ushort,uchar)));
+        disconnect(dev, SIGNAL(mtcTimeCodeChanged(MTCTimeCode::TimeCode)),
+                   this, SLOT(slotMTCValueChanged(QVariant,MTCTimeCode::TimeCode)));
+        disconnect(dev, SIGNAL(mtcBPMChanged(int)),
+                   this, SLOT(slotMTCBPMChanged(QVariant,int)));
     }
 }
 
@@ -336,6 +345,41 @@ void MidiPlugin::slotValueChanged(const QVariant& uid, ushort channel, uchar val
         {
             emit valueChanged(UINT_MAX, i, channel, value,
                               channel == CHANNEL_OFFSET_MBC_BEAT ? "beat" : "");
+            break;
+        }
+    }
+}
+
+void MidiPlugin::slotMTCValueChanged(const QVariant& uid, const MTCTimeCode::TimeCode& timeCode)
+{
+    for (int i = 0; i < m_enumerator->inputDevices().size(); i++)
+    {
+        MidiInputDevice* dev = m_enumerator->inputDevices().at(i);
+        if (dev->uid() == uid)
+        {
+            // Convert MTC timecode to milliseconds and emit as beat
+            quint32 timeMs = timeCode.toMilliseconds();
+            emit valueChanged(UINT_MAX, i, CHANNEL_OFFSET_MBC_BEAT, 255, "beat");
+            
+            // Also emit the timecode change for potential use in show timing
+            emit valueChanged(UINT_MAX, i, CHANNEL_OFFSET_MBC_BEAT + 1, timeMs & 0xFF, "mtc");
+            emit valueChanged(UINT_MAX, i, CHANNEL_OFFSET_MBC_BEAT + 2, (timeMs >> 8) & 0xFF, "mtc");
+            emit valueChanged(UINT_MAX, i, CHANNEL_OFFSET_MBC_BEAT + 3, (timeMs >> 16) & 0xFF, "mtc");
+            emit valueChanged(UINT_MAX, i, CHANNEL_OFFSET_MBC_BEAT + 4, (timeMs >> 24) & 0xFF, "mtc");
+            break;
+        }
+    }
+}
+
+void MidiPlugin::slotMTCBPMChanged(const QVariant& uid, int bpm)
+{
+    for (int i = 0; i < m_enumerator->inputDevices().size(); i++)
+    {
+        MidiInputDevice* dev = m_enumerator->inputDevices().at(i);
+        if (dev->uid() == uid)
+        {
+            // Emit BPM change as a beat signal
+            emit valueChanged(UINT_MAX, i, CHANNEL_OFFSET_MBC_BEAT, 255, "beat");
             break;
         }
     }

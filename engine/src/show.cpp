@@ -28,6 +28,7 @@
 #include "function.h"
 #include "show.h"
 #include "doc.h"
+#include "mtctimecode.h"
 
 #define KXMLQLCShowTimeDivision QString("TimeDivision")
 #define KXMLQLCShowTimeType     QString("Type")
@@ -43,6 +44,8 @@ Show::Show(Doc* doc) : Function(doc, Function::ShowType)
     , m_latestTrackId(0)
     , m_latestShowFunctionID(0)
     , m_runner(NULL)
+    , m_mtcEnabled(false)
+    , m_currentMTCTimeCode()
 {
     setName(tr("New Show"));
 
@@ -192,6 +195,7 @@ QString Show::tempoToString(Show::TimeDivision type)
         case BPM_4_4: return QString("BPM_4_4"); break;
         case BPM_3_4: return QString("BPM_3_4"); break;
         case BPM_2_4: return QString("BPM_2_4"); break;
+        case MTC: return QString("MTC"); break;
         case Invalid:
         default:
             return QString("Invalid"); break;
@@ -209,6 +213,8 @@ Show::TimeDivision Show::stringToTempo(QString tempo)
         return BPM_3_4;
     else if (tempo == "BPM_2_4")
         return BPM_2_4;
+    else if (tempo == "MTC")
+        return MTC;
     else
         return Invalid;
 }
@@ -537,5 +543,34 @@ int Show::adjustAttribute(qreal fraction, int attributeId)
     }
 
     return attrIndex;
+}
+
+/*****************************************************************************
+ * MTC Support
+ *****************************************************************************/
+
+void Show::setMTCEnabled(bool enabled)
+{
+    m_mtcEnabled = enabled;
+}
+
+bool Show::isMTCEnabled() const
+{
+    return m_mtcEnabled;
+}
+
+void Show::setMTCTimeCode(const MTCTimeCode::TimeCode& timeCode)
+{
+    m_currentMTCTimeCode = timeCode;
+}
+
+MTCTimeCode::TimeCode Show::currentMTCTimeCode() const
+{
+    return m_currentMTCTimeCode;
+}
+
+quint32 Show::currentMTCTimeMs() const
+{
+    return m_currentMTCTimeCode.toMilliseconds();
 }
 

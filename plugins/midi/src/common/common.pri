@@ -15,7 +15,8 @@ HEADERS += ../common/mididevice.h \
            ../common/midiprotocol.h \
            ../common/miditemplate.h \
            ../common/midienumerator.h \
-           ../common/configuremidiplugin.h
+           ../common/configuremidiplugin.h \
+           ../common/mtctimecode.h
 
 SOURCES += ../../../interfaces/qlcioplugin.cpp
 SOURCES += ../common/mididevice.cpp \
@@ -24,7 +25,9 @@ SOURCES += ../common/mididevice.cpp \
            ../common/midiplugin.cpp \
            ../common/midiprotocol.cpp \
            ../common/miditemplate.cpp \
-           ../common/configuremidiplugin.cpp
+           ../common/miditemplate.cpp \
+           ../common/configuremidiplugin.cpp \
+           ../common/mtctimecode.cpp
 
 SOURCES += ../../../../engine/src/qlcfile.cpp
 

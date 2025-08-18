@@ -37,6 +37,7 @@
 #define COL_CHANNEL     1
 #define COL_MODE        2
 #define COL_INITMESSAGE 3
+#define COL_MTC         4
 
 #define SETTINGS_GEOMETRY "configuremidiplugin/geometry"
 
@@ -177,6 +178,10 @@ void ConfigureMidiPlugin::slotUpdateTree()
         widget = createInitMessageWidget(dev->midiTemplateName());
         widget->setProperty(PROP_DEV, (qulonglong) dev);
         m_tree->setItemWidget(item, COL_INITMESSAGE, widget);
+
+        widget = createMTCWidget(dev->isMTCEnabled());
+        widget->setProperty(PROP_DEV, (qulonglong) dev);
+        m_tree->setItemWidget(item, COL_MTC, widget);
     }
 
     outputs->setExpanded(true);
@@ -184,6 +189,7 @@ void ConfigureMidiPlugin::slotUpdateTree()
 
     m_tree->resizeColumnToContents(COL_NAME);
     m_tree->resizeColumnToContents(COL_CHANNEL);
+    m_tree->resizeColumnToContents(COL_MTC);
 }
 
 QWidget* ConfigureMidiPlugin::createMidiChannelWidget(int select)
@@ -244,4 +250,32 @@ QWidget* ConfigureMidiPlugin::createInitMessageWidget(QString midiTemplateName)
     connect(combo, SIGNAL(editTextChanged(QString)), this, SLOT(slotInitMessageChanged(QString)));
 
     return combo;
+}
+
+QWidget* ConfigureMidiPlugin::createMTCWidget(bool enabled)
+{
+    QComboBox* combo = new QComboBox;
+    combo->addItem(tr("Disabled"), false);
+    combo->addItem(tr("Enabled"), true);
+    
+    combo->setCurrentIndex(enabled ? 1 : 0);
+    
+    connect(combo, SIGNAL(activated(int)), this, SLOT(slotMTCActivated(int)));
+    
+    return combo;
+}
+
+void ConfigureMidiPlugin::slotMTCActivated(int index)
+{
+    QComboBox* combo = qobject_cast<QComboBox*>(QObject::sender());
+    Q_ASSERT(combo != NULL);
+
+    QVariant var = combo->property(PROP_DEV);
+    Q_ASSERT(var.isValid() == true);
+
+    MidiInputDevice* dev = (MidiInputDevice*) var.toULongLong();
+    Q_ASSERT(dev != NULL);
+
+    bool enabled = combo->itemData(index).toBool();
+    dev->enableMTC(enabled);
 }

@@ -24,6 +24,7 @@
 
 class Show;
 class Doc;
+class MTCMonitorWidget;
 
 /** @addtogroup ui_shows
  * @{

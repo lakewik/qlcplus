@@ -24,6 +24,7 @@
 #include "alsamidiinputthread.h"
 #include "alsamidiutil.h"
 #include "midiprotocol.h"
+#include "mtctimecode.h"
 
 #define POLL_TIMEOUT_MS 1000
 
@@ -281,6 +282,26 @@ void AlsaMidiInputThread::readEvent()
                 cmd = MIDI_BEAT_CLOCK;
 
             qDebug()  << "MIDI clock: " << cmd;
+        }
+        else if (snd_seq_ev_is_system_type(ev))
+        {
+            // Handle MTC (MIDI Time Code) messages
+            if (ev->type == SND_SEQ_EVENT_SYSEX)
+            {
+                // Check if this is a MTC Quarter Frame message
+                if (ev->data.ext.len >= 1)
+                {
+                    uchar* data = (uchar*)ev->data.ext.ptr;
+                    if (data[0] == 0xF1) // MIDI_TIME_CODE
+                    {
+                        // Process MTC Quarter Frame message
+                        if (ev->data.ext.len >= 2)
+                        {
+                            device->processMTCQuarterFrame(data[1]);
+                        }
+                    }
+                }
+            }
         }
 
         // ALSA API is a bit controversial on this. snd_seq_event_input() says

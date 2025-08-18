@@ -22,6 +22,8 @@
 
 #include "mididevice.h"
 
+class MTCTimeCode;
+
 class MidiInputDevice : public MidiDevice
 {
     Q_OBJECT
@@ -31,9 +33,25 @@ public:
     virtual ~MidiInputDevice();
 
     void emitValueChanged(uint channel, uchar value);
+    
+    // MTC support
+    void enableMTC(bool enable);
+    bool isMTCEnabled() const;
+    
+    // Process MTC quarter frame message
+    void processMTCQuarterFrame(uchar data);
+    
+    // Get current MTC timecode
+    MTCTimeCode* mtcTimeCode() const;
 
 signals:
     void valueChanged(const QVariant& uid, ushort channel, uchar value);
+    void mtcTimeCodeChanged(const MTCTimeCode::TimeCode& timeCode);
+    void mtcBPMChanged(int bpm);
+
+private:
+    MTCTimeCode* m_mtcTimeCode;
+    bool m_mtcEnabled;
 };
 
 #endif

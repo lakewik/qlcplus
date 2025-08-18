@@ -21,6 +21,7 @@
 
 #include "coremidiinputdevice.h"
 #include "midiprotocol.h"
+#include "mtctimecode.h"
 
 /****************************************************************************
  * MidiInProc
@@ -71,6 +72,18 @@ static void MidiInProc(const MIDIPacketList* pktList, void* readProcRefCon,
             {
                 if (self->processMBC(cmd) == false)
                     continue;
+            }
+            
+            // Handle MTC (MIDI Time Code) messages
+            if (cmd == MIDI_TIME_CODE)
+            {
+                // MTC Quarter Frame message - data1 contains the quarter frame data
+                if (packet->length > (i + 1) && !MIDI_IS_CMD(packet->data[i + 1]))
+                {
+                    data1 = packet->data[++i];
+                    self->processMTCQuarterFrame(data1);
+                }
+                continue;
             }
 
             // Convert the data to QLC input channel & value

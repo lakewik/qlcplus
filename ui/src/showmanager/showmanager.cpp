@@ -47,6 +47,8 @@
 #include "qlcmacros.h"
 #include "sequence.h"
 #include "chaser.h"
+#include "mtctimecode.h"
+#include "midiprotocol.h"
 
 #define SETTINGS_HSPLITTER "showmanager/hsplitter"
 #define SETTINGS_VSPLITTER "showmanager/vsplitter"
@@ -152,6 +154,10 @@ ShowManager::ShowManager(QWidget* parent, Doc* doc)
     connect(m_doc, SIGNAL(clearing()), this, SLOT(slotDocClearing()));
     connect(m_doc, SIGNAL(functionRemoved(quint32)), this, SLOT(slotFunctionRemoved(quint32)));
     connect(m_doc, SIGNAL(loaded()), this, SLOT(slotDocLoaded()));
+    
+    // Connect to MTC signals from input/output map
+    connect(m_doc->inputOutputMap(), SIGNAL(inputValueChanged(quint32,quint32,uchar,QString)),
+            this, SLOT(slotMTCInputValueChanged(quint32,quint32,uchar,QString)));
 
     QSettings settings;
     QVariant var = settings.value(SETTINGS_HSPLITTER);
@@ -350,6 +356,7 @@ void ShowManager::initToolbar()
     m_timeDivisionCombo->addItem("BPM 4/4", Show::BPM_4_4);
     m_timeDivisionCombo->addItem("BPM 3/4", Show::BPM_3_4);
     m_timeDivisionCombo->addItem("BPM 2/4", Show::BPM_2_4);
+    m_timeDivisionCombo->addItem("MTC", Show::MTC);
     m_toolbar->addWidget(m_timeDivisionCombo);
     connect(m_timeDivisionCombo, SIGNAL(currentIndexChanged(int)),
             this, SLOT(slotTimeDivisionTypeChanged(int)));
@@ -363,6 +370,17 @@ void ShowManager::initToolbar()
     m_toolbar->addWidget(m_bpmField);
     connect(m_bpmField, SIGNAL(valueChanged(int)),
             this, SLOT(slotBPMValueChanged(int)));
+
+    // Add MTC status labels
+    m_mtcStatusLabel = new QLabel(tr("MTC: Off"));
+    m_mtcStatusLabel->setFixedWidth(80);
+    m_mtcStatusLabel->setStyleSheet("QLabel { color: red; }");
+    m_toolbar->addWidget(m_mtcStatusLabel);
+
+    m_mtcTimeLabel = new QLabel("00:00:00:00");
+    m_mtcTimeLabel->setFixedWidth(120);
+    m_mtcTimeLabel->setStyleSheet("QLabel { color: blue; font-weight: bold; }");
+    m_toolbar->addWidget(m_mtcTimeLabel);
 }
 
 /*********************************************************************
@@ -1242,13 +1260,28 @@ void ShowManager::slotTimeDivisionTypeChanged(int idx)
     QVariant var = m_timeDivisionCombo->itemData(idx);
     if (var.isValid())
     {
-        m_showview->setHeaderType((Show::TimeDivision)var.toInt());
-        if (idx > 0)
-            m_bpmField->setEnabled(true);
-        else
+        Show::TimeDivision division = (Show::TimeDivision)var.toInt();
+        m_showview->setHeaderType(division);
+        
+        // Enable/disable BPM field based on timing mode
+        if (division == Show::Time)
+        {
             m_bpmField->setEnabled(false);
+        }
+        else if (division == Show::MTC)
+        {
+            m_bpmField->setEnabled(true);
+            // Enable MTC for the show
+            if (m_show != NULL)
+                m_show->setMTCEnabled(true);
+        }
+        else
+        {
+            m_bpmField->setEnabled(true);
+        }
+        
         if (m_show != NULL)
-            m_show->setTimeDivision((Show::TimeDivision)var.toInt(), m_bpmField->value());
+            m_show->setTimeDivision(division, m_bpmField->value());
     }
 }
 
@@ -1258,6 +1291,117 @@ void ShowManager::slotBPMValueChanged(int value)
     QVariant var = m_timeDivisionCombo->itemData(m_timeDivisionCombo->currentIndex());
     if (var.isValid() && m_show != NULL)
         m_show->setTimeDivision((Show::TimeDivision)var.toInt(), m_bpmField->value());
+}
+
+void ShowManager::slotMTCStatusChanged(bool enabled)
+{
+    if (m_show != NULL)
+    {
+        m_show->setMTCEnabled(enabled);
+        
+        // Update MTC status display
+        if (enabled)
+        {
+            m_mtcStatusLabel->setText(tr("MTC: On"));
+            m_mtcStatusLabel->setStyleSheet("QLabel { color: green; }");
+        }
+        else
+        {
+            m_mtcStatusLabel->setText(tr("MTC: Off"));
+            m_mtcStatusLabel->setStyleSheet("QLabel { color: red; }");
+        }
+    }
+}
+
+void ShowManager::slotMTCTimeCodeChanged(const MTCTimeCode::TimeCode& timeCode)
+{
+    if (m_show != NULL && m_show->isMTCEnabled())
+    {
+        m_show->setMTCTimeCode(timeCode);
+        
+        // Update MTC time display
+        QString timeStr = QString("%1:%2:%3:%4")
+            .arg(timeCode.hours, 2, 10, QChar('0'))
+            .arg(timeCode.minutes, 2, 10, QChar('0'))
+            .arg(timeCode.seconds, 2, 10, QChar('0'))
+            .arg(timeCode.frames, 2, 10, QChar('0'));
+        m_mtcTimeLabel->setText(timeStr);
+        
+        // If show is in MTC mode, update the cursor position
+        if (m_show->timeDivisionType() == Show::MTC)
+        {
+            quint32 timeMs = timeCode.toMilliseconds();
+            m_showview->setCursorPosition(timeMs);
+        }
+    }
+}
+
+void ShowManager::slotMTCBPMChanged(int bpm)
+{
+    if (m_show != NULL && m_show->isMTCEnabled())
+    {
+        // Update BPM field if in MTC mode
+        if (m_show->timeDivisionType() == Show::MTC)
+        {
+            m_bpmField->setValue(bpm);
+            m_show->setTimeDivision(Show::MTC, bpm);
+        }
+    }
+}
+
+void ShowManager::slotMTCInputValueChanged(quint32 universe, quint32 channel, uchar value, QString key)
+{
+    // Handle MTC input signals
+    if (key == "mtc" && m_show != NULL && m_show->timeDivisionType() == Show::MTC)
+    {
+        // This is an MTC timecode signal
+        // The channel indicates which part of the timecode:
+        // CHANNEL_OFFSET_MBC_BEAT + 1 = time LSB
+        // CHANNEL_OFFSET_MBC_BEAT + 2 = time MSB
+        // CHANNEL_OFFSET_MBC_BEAT + 3 = time higher MSB
+        // CHANNEL_OFFSET_MBC_BEAT + 4 = time highest MSB
+        
+        static quint32 mtcTimeMs = 0;
+        static int mtcChannel = 0;
+        
+        if (channel == CHANNEL_OFFSET_MBC_BEAT + 1)
+        {
+            mtcTimeMs = (mtcTimeMs & 0xFFFFFF00) | value;
+            mtcChannel = 1;
+        }
+        else if (channel == CHANNEL_OFFSET_MBC_BEAT + 2)
+        {
+            mtcTimeMs = (mtcTimeMs & 0xFFFF00FF) | (value << 8);
+            mtcChannel = 2;
+        }
+        else if (channel == CHANNEL_OFFSET_MBC_BEAT + 3)
+        {
+            mtcTimeMs = (mtcTimeMs & 0xFF00FFFF) | (value << 16);
+            mtcChannel = 3;
+        }
+        else if (channel == CHANNEL_OFFSET_MBC_BEAT + 4)
+        {
+            mtcTimeMs = (mtcTimeMs & 0x00FFFFFF) | (value << 24);
+            mtcChannel = 4;
+            
+            // Complete timecode received, update show cursor
+            if (m_show->isMTCEnabled())
+            {
+                m_showview->setCursorPosition(mtcTimeMs);
+                slotUpdateTime(mtcTimeMs);
+            }
+        }
+    }
+    else if (key == "beat" && m_show != NULL && m_show->timeDivisionType() == Show::MTC)
+    {
+        // This is a beat signal from MTC
+        // Update the time display
+        if (m_show->isMTCEnabled())
+        {
+            // The beat signal indicates timing update
+            // We could use this to trigger show functions
+        }
+    }
 }
 
 void ShowManager::slotViewClicked(QMouseEvent *event)

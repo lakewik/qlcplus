@@ -21,6 +21,7 @@
 
 #include "win32midiinputdevice.h"
 #include "midiprotocol.h"
+#include "mtctimecode.h"
 
 extern "C" {
 static void CALLBACK MidiInProc(HMIDIIN hMidiIn, UINT wMsg,
@@ -43,6 +44,15 @@ static void CALLBACK MidiInProc(HMIDIIN hMidiIn, UINT wMsg,
             if (self->processMBC(cmd) == false)
                 return;
         }
+        
+        // Handle MTC (MIDI Time Code) messages
+        if (cmd == MIDI_TIME_CODE)
+        {
+            // MTC Quarter Frame message - data1 contains the quarter frame data
+            self->processMTCQuarterFrame(data1);
+            return;
+        }
+        
         if (MIDI_CMD(cmd) == MIDI_PROGRAM_CHANGE)
             data2 = 127;
 

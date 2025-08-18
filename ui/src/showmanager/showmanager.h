@@ -31,6 +31,8 @@
 #include "show.h"
 #include "doc.h"
 
+class MTCTimeCode;
+
 class QComboBox;
 class QCheckBox;
 class QSplitter;
@@ -138,6 +140,8 @@ private:
     QAction *m_playAction;
     QComboBox *m_timeDivisionCombo;
     QSpinBox *m_bpmField;
+    QLabel *m_mtcStatusLabel;
+    QLabel *m_mtcTimeLabel;
 
 protected slots:
     /** Slot called when the user selects a show from
@@ -170,6 +174,10 @@ protected slots:
 protected slots:
     void slotTimeDivisionTypeChanged(int idx);
     void slotBPMValueChanged(int value);
+    void slotMTCStatusChanged(bool enabled);
+    void slotMTCTimeCodeChanged(const MTCTimeCode::TimeCode& timeCode);
+    void slotMTCBPMChanged(int bpm);
+    void slotMTCInputValueChanged(quint32 universe, quint32 channel, uchar value, QString key);
 
     /*********************************************************************
      * UI events

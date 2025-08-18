@@ -30,6 +30,7 @@
 #include "scene.h"
 #include "show.h"
 #include "doc.h"
+#include "mtcmonitorwidget.h"
 
 #define NAME_COL  0
 #define STEPS_COL 1
@@ -65,6 +66,13 @@ ShowEditor::ShowEditor(QWidget* parent, Show* show, Doc* doc)
     m_nameEdit->setSelection(0, m_nameEdit->text().length());
 
     updateFunctionList();
+
+    // Add MTC monitor widget
+    MTCMonitorWidget* mtcWidget = new MTCMonitorWidget(this);
+    mtcWidget->setShow(m_show);
+    QVBoxLayout* mtcLayout = new QVBoxLayout(m_mtcMonitorContainer);
+    mtcLayout->setContentsMargins(0, 0, 0, 0);
+    mtcLayout->addWidget(mtcWidget);
 
     // Set focus to the editor
     m_nameEdit->setFocus();
