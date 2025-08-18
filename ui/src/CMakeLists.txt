@@ -98,6 +98,7 @@ add_library(${module_name}
     showmanager/showmanager.cpp showmanager/showmanager.h
     showmanager/timingstool.cpp showmanager/timingstool.h
     showmanager/trackitem.cpp showmanager/trackitem.h
+    showmanager/mtcmonitorwidget.cpp showmanager/mtcmonitorwidget.h
     showmanager/videoitem.cpp showmanager/videoitem.h
     simpledesk.cpp simpledesk.h
     simpledeskengine.cpp simpledeskengine.h
