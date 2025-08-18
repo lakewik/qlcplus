@@ -1332,7 +1332,7 @@ void ShowManager::slotMTCTimeCodeChanged(const TimeCode& timeCode)
         if (m_show->timeDivisionType() == Show::MTC)
         {
             quint32 timeMs = timeCode.toMilliseconds();
-            m_showview->setCursorPosition(timeMs);
+            m_showview->moveCursor(timeMs);
         }
     }
 }
@@ -1352,6 +1352,8 @@ void ShowManager::slotMTCBPMChanged(int bpm)
 
 void ShowManager::slotMTCInputValueChanged(quint32 universe, quint32 channel, uchar value, QString key)
 {
+    Q_UNUSED(universe)
+    
     // Handle MTC input signals
     if (key == "mtc" && m_show != NULL && m_show->timeDivisionType() == Show::MTC)
     {
@@ -1388,7 +1390,7 @@ void ShowManager::slotMTCInputValueChanged(quint32 universe, quint32 channel, uc
             // Complete timecode received, update show cursor
             if (m_show->isMTCEnabled())
             {
-                m_showview->setCursorPosition(mtcTimeMs);
+                m_showview->moveCursor(mtcTimeMs);
                 slotUpdateTime(mtcTimeMs);
             }
         }
