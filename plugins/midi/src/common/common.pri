@@ -33,6 +33,9 @@ SOURCES += ../../../../engine/src/qlcfile.cpp
 
 FORMS   += ../common/configuremidiplugin.ui
 
+# Force MOC processing for MTCTimeCode
+MOC_HEADERS += ../common/mtctimecode.h
+
 # This must be after "TARGET = " and before target installation so that
 # install_name_tool can be run before target installation
 macx:include(../../../../platforms/macos/nametool.pri)
